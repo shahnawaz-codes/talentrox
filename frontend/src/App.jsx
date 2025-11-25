@@ -3,7 +3,7 @@ import React from 'react'
 const App = () => {
   return (
     <div>
-      hello world
+      i am srk from frontend
     </div>
   )
 }
