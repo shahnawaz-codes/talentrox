@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import routes from "./routes/index.js";
 import { ENV } from "./lib/env.js";
+import { connectDB } from "./lib/db.js";
 const app = express();
 app.use(cors());
 
@@ -15,12 +16,22 @@ const _dirname = path.resolve();
 if (ENV.NODE_ENV === "production") {
   // Serve static files from the React frontend app
   app.use(express.static(path.join(_dirname, "../frontend/dist")));
-// Anything(route) that doesn't match the above, send back index.html
+  // Anything(route) that doesn't match the above, send back index.html
   app.get("/{*any}", (req, res) => {
     res.sendFile(path.join(_dirname, "../frontend/dist/index.html"));
   });
 }
 
-app.listen(ENV.PORT, () => {
-  console.log(`Server is running on port ${ENV.PORT}`);
-});
+export const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(ENV.PORT, () => {
+      console.log(`Server is running on port ${ENV.PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
