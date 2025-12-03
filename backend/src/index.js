@@ -1,23 +1,30 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import routes from "./routes/index.js";
 import { ENV } from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
 import { serve } from "inngest/express";
 import { inngest, functions } from "./lib/inngest.js";
+import { clerkMiddleware } from "@clerk/express";
+import chatRoutes from "./routes/chatRoute.js";
+
 const app = express();
+
+// CORS configuration to allow requests from the client URL
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-// Middleware
+// Middleware for parsing JSON bodies
 app.use(express.json());
 // Inngest setup for handling functions and events
 app.use("/api/inngest", serve({ client: inngest, functions }));
-
-
+// Clerk middleware for authentication
+app.use(clerkMiddleware());
+// Test route
 app.get("/hello", (req, res) => {
   res.send("Welcome to the API");
 });
-app.use("/api", routes);
+// API routes
+app.use("/api/chat", chatRoutes);
+
 // Serve frontend in production
 const _dirname = path.resolve();
 //make our app ready for development and production
