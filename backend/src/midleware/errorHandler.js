@@ -1,4 +1,4 @@
-export default function errorHandler(err, req, res, next = () => {}) {
+export default function errorHandler(err, req, res, next) {
   console.error(err);
   res
     .status(err.status || 500)
