@@ -13,7 +13,7 @@ export const createSession = async (req, res) => {
     if (!problem || !difficulty) {
       return res
         .status(400)
-        .json({ message: "Problem and difficulty are required" });
+        .json({ message: "Problem and difficulty are required !!" });
     }
     //create session
     const session = await Session.create({
