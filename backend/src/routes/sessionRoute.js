@@ -17,10 +17,6 @@ sessionRoutes.get("/my-recent", protectedRoute, getMyRecentSessions);
 
 sessionRoutes.get("/:sessionId", protectedRoute, getSessionById);
 sessionRoutes.post("/:sessionId/join", protectedRoute, joinSessionById);
-sessionRoutes.post(
-  "/:sessionId/end",
-  protectedRoute,
-  endSessionById
-);
+sessionRoutes.post("/:sessionId/end", protectedRoute, endSessionById);
 
 export default sessionRoutes;
