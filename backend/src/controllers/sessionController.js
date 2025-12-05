@@ -34,7 +34,7 @@ export const createSession = async (req, res, next) => {
       },
     });
     // create stream chat
-    chatClient
+    await chatClient
       .channel("messaging", callId, {
         name: `${problem} session`,
         members: [clerkId],
