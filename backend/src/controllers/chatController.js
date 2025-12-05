@@ -1,3 +1,5 @@
+import errorHandler from "../midleware/errorHandler.js";
+
 export const generateToken = (req, res) => {
   try {
     const { clearkId, name, imageUrl } = req.user;
@@ -6,6 +8,6 @@ export const generateToken = (req, res) => {
     res.json({ token, user: { id: clearkId, name, image: imageUrl } });
   } catch (error) {
     console.error("Error generating Stream token:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    errorHandler(error, req, res);
   }
 };
