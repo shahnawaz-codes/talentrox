@@ -1,4 +1,3 @@
-import errorHandler from "../midleware/errorHandler.js";
 
 export const generateToken = (req, res) => {
   try {
@@ -8,6 +7,6 @@ export const generateToken = (req, res) => {
     res.json({ token, user: { id: clearkId, name, image: imageUrl } });
   } catch (error) {
     console.error("Error generating Stream token:", error);
-    errorHandler(error, req, res);
+    next(error);
   }
 };

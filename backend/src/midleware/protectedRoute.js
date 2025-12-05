@@ -1,13 +1,11 @@
 import { requireAuth } from "@clerk/express";
 import { User } from "../model/User.js";
-import e from "express";
-import errorHandler from "./errorHandler.js";
 
 export const protectedRoute = [
   requireAuth(),
   async (req, res, next) => {
     try {
-      const { userId } = req.auth;
+      const { userId } = req.auth; 
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -20,7 +18,7 @@ export const protectedRoute = [
       next();
     } catch (error) {
       console.error("Error in protectedRoute middleware:", error);
-      errorHandler(error, req, res);
+      next(error);
     }
   },
 ];
