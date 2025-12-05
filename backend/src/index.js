@@ -7,13 +7,16 @@ import { serve } from "inngest/express";
 import { inngest, functions } from "./lib/inngest.js";
 import { clerkMiddleware } from "@clerk/express";
 import chatRoutes from "./routes/chatRoute.js";
+import sessionRoutes from "./routes/sessionRoute.js";
+import errorHandler from "./midleware/errorHandler.js";
 
 const app = express();
 
 // CORS configuration to allow requests from the client URL
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-// Middleware for parsing JSON bodies
+// Middleware 
 app.use(express.json());
+app.use(errorHandler);  
 // Inngest setup for handling functions and events
 app.use("/api/inngest", serve({ client: inngest, functions }));
 // Clerk middleware for authentication
@@ -24,6 +27,8 @@ app.get("/hello", (req, res) => {
 });
 // API routes
 app.use("/api/chat", chatRoutes);
+app.use("/api/session", sessionRoutes);
+
 
 // Serve frontend in production
 const _dirname = path.resolve();
