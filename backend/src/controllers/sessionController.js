@@ -1,7 +1,7 @@
 import { chatClient, streamClient } from "../lib/stream.js";
 import { Session } from "../model/Session.js";
 
-export const createSession = async (req, res) => {
+export const createSession = async (req, res, next) => {
   try {
     const { problem, difficulty } = req.body;
     const { _id, clerkId } = req.user;
@@ -48,7 +48,7 @@ export const createSession = async (req, res) => {
   }
 };
 
-export const getActiveSessions = async (_, res) => {
+export const getActiveSessions = async (_, res, next) => {
   try {
     const sessions = await Session.find({ status: "active" })
       .populate("host", "name imageUrl clerkId email")
@@ -60,7 +60,7 @@ export const getActiveSessions = async (_, res) => {
     next(error);
   }
 };
-export const getMyRecentSessions = async (req, res) => {
+export const getMyRecentSessions = async (req, res, next) => {
   try {
     const { _id } = req.user;
     const sessions = await Session.find({
@@ -75,7 +75,7 @@ export const getMyRecentSessions = async (req, res) => {
     next(error);
   }
 };
-export const getSessionById = async (req, res) => {
+export const getSessionById = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
 
@@ -92,7 +92,7 @@ export const getSessionById = async (req, res) => {
     next(error);
   }
 };
-export const joinSessionById = async (req, res) => {
+export const joinSessionById = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { _id, clerkId } = req.user;
@@ -113,7 +113,7 @@ export const joinSessionById = async (req, res) => {
     next(error);
   }
 };
-export const endSessionById = async (req, res) => {
+export const endSessionById = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { _id, clerkId } = req.user;

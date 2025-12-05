@@ -14,9 +14,8 @@ const app = express();
 
 // CORS configuration to allow requests from the client URL
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-// Middleware 
+// Middleware
 app.use(express.json());
-app.use(errorHandler);  
 // Inngest setup for handling functions and events
 app.use("/api/inngest", serve({ client: inngest, functions }));
 // Clerk middleware for authentication
@@ -29,6 +28,8 @@ app.get("/hello", (req, res) => {
 app.use("/api/chat", chatRoutes);
 app.use("/api/session", sessionRoutes);
 
+// Error handling middleware
+app.use(errorHandler);
 
 // Serve frontend in production
 const _dirname = path.resolve();
