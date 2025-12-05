@@ -110,7 +110,7 @@ export const joinSessionById = async (req, res, next) => {
         .json({ message: "you can't join your own session" });
     //check if session is full
     if (session.participants)
-      return res.status(400).json({ message: "session is full" });
+      return res.status(409).json({ message: "session is full" });
     session.participants = _id;
     await session.save();
     // add user to stream
@@ -130,20 +130,22 @@ export const endSessionById = async (req, res, next) => {
     if (!session) return res.status(404).json({ message: "Session not found" });
     //check if session is active
     if (session.status === "completed")
-      return res.status(400).json({ message: "Session is already completed" });
+      return res.status(409).json({ message: "Session is already completed" });
     if (session.host.toString() !== _id.toString())
       return res
         .status(403)
         .json({ message: "You are not the host of this session" });
-    session.status = "completed";
-    await session.save();
-    // remove user and end call from stream chat
+
+    // remove user and end chat from stream chat
     const channel = await chatClient.channel("messaging", session.callId);
     await channel.removeMembers([clerkId]);
     await channel.delete();
     // end call from stream
     const call = await streamClient.video.call("default", session.callId);
     await call.delete({ hard: true });
+    // end session
+    session.status = "completed";
+    await session.save();
     res.status(200).json({ session });
   } catch (error) {
     console.error("Error ending session by id:", error);
