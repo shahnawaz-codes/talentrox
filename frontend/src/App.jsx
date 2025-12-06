@@ -1,18 +1,19 @@
-import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+} from "@clerk/clerk-react";
 import React from "react";
+import { Outlet } from "react-router";
 
 const App = () => {
   return (
-    <div>
-      i am srk from frontend
-      <SignedOut>
-        <SignInButton mode="modal" />
-      </SignedOut>
-      <SignedIn>
-        <SignOutButton />
-      </SignedIn>
-      <UserButton />
-    </div>
+    <>
+      
+      <Outlet />
+    </>
   );
 };
 
