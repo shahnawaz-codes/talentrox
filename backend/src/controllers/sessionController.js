@@ -3,7 +3,7 @@ import { Session } from "../model/Session.js";
 
 export const createSession = async (req, res, next) => {
   try {
-    const { problem, difficulty } = req.body;
+    const { problem, difficulty}  = req.body;
     const { _id, clerkId } = req.user;
     //generate call id for stream call
     const callId = `session-${Date.now()}-${Math.random()
