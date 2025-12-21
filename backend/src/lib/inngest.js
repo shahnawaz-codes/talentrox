@@ -16,7 +16,7 @@ const syncUser = inngest.createFunction(
     await connectDB();
     // Extract user data from event payload and create new user in DB
     const { id, first_name, last_name, email_addresses, image_url } =
-      event.data;
+      event.data;K
     const newUser = {
       clerkId: id,
       name: `${first_name || ""} ${last_name || ""}`.trim(),

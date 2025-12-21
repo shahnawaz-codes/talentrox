@@ -11,9 +11,9 @@ import sessionRoutes from "./routes/sessionRoute.js";
 import errorHandler from "./midleware/errorHandler.js";
 
 const app = express();
-// Clerk middleware for authentication
+// Clerk middleware for authentication. it gives access to req.auth
 app.use(clerkMiddleware());
-// Middleware
+// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // CORS configuration to allow requests from the client URL
