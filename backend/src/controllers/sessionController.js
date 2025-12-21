@@ -3,12 +3,15 @@ import { Session } from "../model/Session.js";
 
 export const createSession = async (req, res, next) => {
   try {
-    const { problem, difficulty}  = req.body;
+    const { problem, difficulty } = req.body || {};
+
     const { _id, clerkId } = req.user;
     //generate call id for stream call
-    const callId = `session-${Date.now()}-${Math.random()
+    const callId = `session_${Date.now()}_${Math.random()
       .toString(36)
+      .replace(/[^a-z0-9]/g, "")
       .substring(0, 8)}`;
+
     //check if problem and difficulty are provided
     if (!problem || !difficulty) {
       return res
@@ -52,6 +55,7 @@ export const getActiveSessions = async (_, res, next) => {
   try {
     const sessions = await Session.find({ status: "active" })
       .populate("host", "name imageUrl clerkId email")
+      .populate("participant", "name imageUrl clerkId email")
       .sort({ createdAt: -1 })
       .limit(20);
     res.status(200).json({ sessions });
@@ -65,7 +69,7 @@ export const getMyRecentSessions = async (req, res, next) => {
     const { _id } = req.user;
     const sessions = await Session.find({
       status: "completed",
-      $or: [{ host: _id }, { participants: _id }],
+      $or: [{ host: _id }, { participant: _id }],
     })
       .sort({ createdAt: -1 })
       .limit(20);
@@ -81,7 +85,7 @@ export const getSessionById = async (req, res, next) => {
 
     const session = await Session.findById(sessionId)
       .populate("host", "name imageUrl clerkId email")
-      .populate("participants", "name imageUrl email");
+      .populate("participant", "name imageUrl email");
 
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
@@ -109,9 +113,9 @@ export const joinSessionById = async (req, res, next) => {
         .status(400)
         .json({ message: "you can't join your own session" });
     //check if session is full
-    if (session.participants)
+    if (session.participant)
       return res.status(409).json({ message: "session is full" });
-    session.participants = _id;
+    session.participant = _id;
     await session.save();
     // add user to stream
     const channel = chatClient.channel("messaging", session.callId);

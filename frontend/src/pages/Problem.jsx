@@ -109,9 +109,8 @@ function Problem() {
   };
   return (
     <>
-      <Navbar />
-      <div className="h-screen bg-base-100 flex flex-col ">
-        <div className="flex-1 mt-24">
+      <div className="h-screen bg-base-100 flex flex-col mt-24">
+        <div className="flex-1">
           <PanelGroup direction="horizontal">
             {/* Left panel – Problem Description */}
             <Panel defaultSize={40} minSize={30}>

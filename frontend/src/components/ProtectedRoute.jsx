@@ -2,7 +2,6 @@ import {
   RedirectToSignIn,
   SignedIn,
   SignedOut,
-  SignIn,
 } from "@clerk/clerk-react";
 import React from "react";
 

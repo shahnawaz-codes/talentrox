@@ -16,7 +16,14 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { SignInButton } from "@clerk/clerk-react";
+import {
+  ClerkLoaded,
+  ClerkLoading,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/clerk-react";
+import Navbar from "../components/Navbar";
 
 // Counter animation hook
 function useCountAnimation(end, duration = 2000, startCounting) {
@@ -45,7 +52,6 @@ function useCountAnimation(end, duration = 2000, startCounting) {
 
   return count;
 }
-
 // Intersection Observer hook for scroll animations
 function useInView(options = {}) {
   const ref = useRef(null);
@@ -98,9 +104,16 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-base-100 to-base-200">
-      {/* ENHANCED FLOATING NAVBAR */}
-      <nav
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-full
+      <ClerkLoading>
+        {/* Skeleton / placeholder navbar */}
+        <div className="h-16 w-full bg-base-100 animate-pulse fixed top-0 z-50" />
+      </ClerkLoading>
+      {/* when user is unauthenticated then show this */}
+      <ClerkLoaded>
+        <SignedOut>
+          {/*NAVBAR */}
+          <nav
+            className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-full
         px-6 py-3 w-[95%] max-w-7xl
         flex justify-between items-center
         transition-all duration-300 ease-in-out
@@ -110,129 +123,133 @@ function Home() {
             ? "bg-base-100/95 shadow-[0_8px_32px_rgba(0,0,0,0.12)] scale-[0.97] border border-primary/30"
             : "scale-100 bg-base-100/40 border border-base-content/10"
         }`}
-      >
-        {/* LOGO */}
-        <Link
-          to={"/"}
-          className="flex items-center gap-3 group hover:opacity-80 transition-all duration-200"
-        >
-          <div className="relative">
-            <div
-              className={`rounded-xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center transition-all duration-300 ${
-                scrolled
-                  ? "size-11 shadow-[0_0_20px_rgba(var(--p),0.5)]"
-                  : "size-12 shadow-lg"
-              }`}
-            >
-              <Sparkles
-                className={`text-primary-content transition-all duration-300 ${
-                  scrolled ? "size-6" : "size-7"
-                }`}
-                strokeWidth={2.5}
-              />
-            </div>
-            <div className="absolute -top-1 -right-1 size-3 bg-success rounded-full border-2 border-base-100 animate-pulse"></div>
-          </div>
-
-          <div className="flex flex-col">
-            <span
-              className={`font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent transition-all duration-300 ${
-                scrolled ? "text-xl" : "text-2xl"
-              }`}
-            >
-              Talent<span className="text-primary">ROX</span>
-            </span>
-            <span
-              className={`text-base-content/60 font-medium -mt-1 transition-all duration-300 ${
-                scrolled ? "text-xs" : "text-sm"
-              }`}
-            >
-              Interview Platform
-            </span>
-          </div>
-        </Link>
-
-        {/* DESKTOP NAVIGATION LINKS */}
-        <div className="hidden md:flex items-center gap-6">
-          <a
-            href="#features"
-            className="text-sm font-medium text-base-content/70 hover:text-primary transition-all duration-200 relative group"
           >
-            Features
-            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a
-            href="#how-it-works"
-            className="text-sm font-medium text-base-content/70 hover:text-primary transition-all duration-200 relative group"
-          >
-            How It Works
-            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a
-            href="#pricing"
-            className="text-sm font-medium text-base-content/70 hover:text-primary transition-all duration-200 relative group"
-          >
-            Pricing
-            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-          </a>
-        </div>
+            {/* LOGO */}
+            <Link
+              to={"/"}
+              className="flex items-center gap-3 group hover:opacity-80 transition-all duration-200"
+            >
+              <div className="relative">
+                <div
+                  className={`rounded-xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center transition-all duration-300 ${
+                    scrolled
+                      ? "size-11 shadow-[0_0_20px_rgba(var(--p),0.5)]"
+                      : "size-12 shadow-lg"
+                  }`}
+                >
+                  <Sparkles
+                    className={`text-primary-content transition-all duration-300 ${
+                      scrolled ? "size-6" : "size-7"
+                    }`}
+                    strokeWidth={2.5}
+                  />
+                </div>
+                <div className="absolute -top-1 -right-1 size-3 bg-success rounded-full border-2 border-base-100 animate-pulse"></div>
+              </div>
 
-        {/* AUTH BUTTON - DESKTOP */}
-        <div className="hidden md:block">
-          <SignInButton mode="modal">
-            <button className="btn btn-primary btn-md gap-2 shadow-[0_0_15px_rgba(var(--p),0.3)] hover:shadow-[0_0_25px_rgba(var(--p),0.5)] transition-all hover:scale-105 rounded-full">
-              <span>Get Started</span>
-              <ArrowRight className="size-4" />
-            </button>
-          </SignInButton>
-        </div>
+              <div className="flex flex-col">
+                <span
+                  className={`font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent transition-all duration-300 ${
+                    scrolled ? "text-xl" : "text-2xl"
+                  }`}
+                >
+                  Talent<span className="text-primary">ROX</span>
+                </span>
+                <span
+                  className={`text-base-content/60 font-medium -mt-1 transition-all duration-300 ${
+                    scrolled ? "text-xs" : "text-sm"
+                  }`}
+                >
+                  Interview Platform
+                </span>
+              </div>
+            </Link>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-base-content hover:text-primary transition-colors duration-300"
-        >
-          {isMobileMenuOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
-        </button>
-      </nav>
-
-      {/* MOBILE MENU */}
-      {isMobileMenuOpen && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-6xl rounded-3xl shadow-xl p-6 md:hidden backdrop-blur-md bg-base-100/95 animate-in slide-in-from-top duration-300 border border-primary/20">
-          <ul className="flex flex-col gap-4">
-            <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>
-              <li className="cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 text-base-content hover:text-primary">
+            {/* DESKTOP NAVIGATION LINKS */}
+            <div className="hidden md:flex items-center gap-6">
+              <a
+                href="#features"
+                className="text-sm font-medium text-base-content/70 hover:text-primary transition-all duration-200 relative group"
+              >
                 Features
-              </li>
-            </a>
-            <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)}>
-              <li className="cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 text-base-content hover:text-primary">
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a
+                href="#how-it-works"
+                className="text-sm font-medium text-base-content/70 hover:text-primary transition-all duration-200 relative group"
+              >
                 How It Works
-              </li>
-            </a>
-            <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>
-              <li className="cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 text-base-content hover:text-primary">
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a
+                href="#pricing"
+                className="text-sm font-medium text-base-content/70 hover:text-primary transition-all duration-200 relative group"
+              >
                 Pricing
-              </li>
-            </a>
-            <li className="mt-4">
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </a>
+            </div>
+
+            {/* AUTH BUTTON - DESKTOP */}
+            <div className="hidden md:block">
               <SignInButton mode="modal">
-                <button className="btn btn-primary w-full gap-2 shadow-md rounded-full">
-                  Get Started
+                <button className="btn btn-primary btn-md gap-2 shadow-[0_0_15px_rgba(var(--p),0.3)] hover:shadow-[0_0_25px_rgba(var(--p),0.5)] transition-all hover:scale-105 rounded-full">
+                  <span>Get Started</span>
                   <ArrowRight className="size-4" />
                 </button>
               </SignInButton>
-            </li>
-          </ul>
-        </div>
-      )}
+            </div>
+
+            {/* MOBILE MENU BUTTON */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-base-content hover:text-primary transition-colors duration-300"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </nav>
+          {/* MOBILE MENU */}
+          {isMobileMenuOpen && (
+            <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-6xl rounded-3xl shadow-xl p-6 md:hidden backdrop-blur-md bg-base-100/95 animate-in slide-in-from-top duration-300 border border-primary/20">
+              <ul className="flex flex-col gap-4">
+                <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>
+                  <li className="cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 text-base-content hover:text-primary">
+                    Features
+                  </li>
+                </a>
+                <a
+                  href="#how-it-works"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <li className="cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 text-base-content hover:text-primary">
+                    How It Works
+                  </li>
+                </a>
+                <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>
+                  <li className="cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 text-base-content hover:text-primary">
+                    Pricing
+                  </li>
+                </a>
+                <li className="mt-4">
+                  <SignInButton mode="modal">
+                    <button className="btn btn-primary w-full gap-2 shadow-md rounded-full">
+                      Get Started
+                      <ArrowRight className="size-4" />
+                    </button>
+                  </SignInButton>
+                </li>
+              </ul>
+            </div>
+          )}
+        </SignedOut>
+      </ClerkLoaded>
 
       {/* ENHANCED HERO SECTION */}
-      <div className="max-w-7xl mx-auto px-6 py-24 lg:py-32">
+      <div className="max-w-7xl mx-auto px-6 py-24 lg:py-32 mt-20" >
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* LEFT CONTENT */}
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

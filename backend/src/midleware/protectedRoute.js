@@ -2,10 +2,10 @@ import { requireAuth } from "@clerk/express";
 import { User } from "../model/User.js";
 
 export const protectedRoute = [
-  requireAuth(),
+  requireAuth(), // Clerk middleware to verify authentication
   async (req, res, next) => {
     try {
-      const { userId } = req.auth; 
+      const { userId } = req.auth();
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }

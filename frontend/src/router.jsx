@@ -4,6 +4,7 @@ import App from "./App";
 import Home from "./pages/Home";
 import Problems from "./pages/Problems";
 import Problem from "./pages/Problem";
+import DashboardPage from "./pages/Dashboard";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -26,6 +27,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Problem />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <ProtectedRoute>
+            <DashboardPage />
           </ProtectedRoute>
         ),
       },

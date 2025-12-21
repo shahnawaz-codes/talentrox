@@ -11,15 +11,16 @@ import sessionRoutes from "./routes/sessionRoute.js";
 import errorHandler from "./midleware/errorHandler.js";
 
 const app = express();
-
-// CORS configuration to allow requests from the client URL
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-// Middleware
-app.use(express.json());
-// Inngest setup for handling functions and events
-app.use("/api/inngest", serve({ client: inngest, functions }));
 // Clerk middleware for authentication
 app.use(clerkMiddleware());
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// CORS configuration to allow requests from the client URL
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+// Inngest setup for handling functions and events
+app.use("/api/inngest", serve({ client: inngest, functions }));
+
 // Test route
 app.get("/hello", (req, res) => {
   res.send("Welcome to the API");

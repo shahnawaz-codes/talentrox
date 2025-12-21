@@ -6,7 +6,9 @@ export const useCreateSession = () => {
   const result = useMutation({
     mutationKey: ["createSession"],
     mutationFn: sessionApi.createSession,
-    onSuccess: toast.success("Session created successfully!"),
+    onSuccess: () => {
+      toast.success("Session created successfully!");
+    },
     onError: (error) => {
       toast.error(
         error?.response?.data?.message || "Failed to create session."
@@ -43,7 +45,9 @@ export const useJoinSession = (sessionId) => {
   const result = useMutation({
     mutationKey: ["joinSession", sessionId],
     mutationFn: () => sessionApi.joinSession(sessionId),
-    onSuccess: toast.success("Session Join successfully!"),
+    onSuccess: () => {
+      toast.success("Session Join successfully!");
+    },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Failed to Join session.");
     },
