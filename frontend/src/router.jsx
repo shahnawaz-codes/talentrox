@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Problems from "./pages/Problems";
 import Problem from "./pages/Problem";
 import DashboardPage from "./pages/Dashboard";
+import Session from "./pages/Session";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +36,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "session/:sessionId",
+        element: (
+          <ProtectedRoute>
+            <Session />
           </ProtectedRoute>
         ),
       },
