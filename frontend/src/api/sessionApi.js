@@ -15,14 +15,14 @@ export const sessionApi = {
   },
   getSessionById: async (sessionId) => {
     const response = await axiosInstance.get(`/session/${sessionId}`);
-    return response.data;
+    return response.data?.session;
   },
   joinSession: async (sessionId) => {
     const response = await axiosInstance.post(`/session/${sessionId}/join`);
     return response.data;
   },
   endSession: async (sessionId) => {
-    const response = await axiosInstance.delete(`/session/${sessionId}`);
+    const response = await axiosInstance.post(`/session/${sessionId}/end`);
     return response.data;
   },
 };

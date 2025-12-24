@@ -1,7 +1,7 @@
 import { Inngest } from "inngest";
 import { connectDB } from "./db.js";
 import { User } from "../model/User.js";
-import { upsertStreamUser } from "./stream.js";
+import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 
 // Initialize Inngest client
 export const inngest = new Inngest({ id: "Talentrox" });
@@ -16,7 +16,7 @@ const syncUser = inngest.createFunction(
     await connectDB();
     // Extract user data from event payload and create new user in DB
     const { id, first_name, last_name, email_addresses, image_url } =
-      event.data;K
+      event.data;
     const newUser = {
       clerkId: id,
       name: `${first_name || ""} ${last_name || ""}`.trim(),
@@ -26,7 +26,7 @@ const syncUser = inngest.createFunction(
     await User.create(newUser);
     // Also upsert user in Stream
     await upsertStreamUser({
-      id: id.toString(), // Clerk ID
+      id: newUser.clerkId, // Clerk ID
       name: newUser.name,
       image: newUser.imageUrl,
     });

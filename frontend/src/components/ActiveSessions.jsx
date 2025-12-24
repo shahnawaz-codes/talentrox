@@ -11,6 +11,13 @@ import { Link } from "react-router";
 import { getDifficultyBadgeClass } from "../lib/utils";
 
 function ActiveSessions({ sessions, isLoading, isUserInSession }) {
+  /**
+   * session.participant && !isUserInSession(session) means
+   * '!isUserInSession(session) -> you are not part of this session neither host nor participant so someone else is host so 1 person already joined 1/2
+   * session.participant -> someone already joined as participant
+   * So the session is full so now its become 2/2 t
+   * thats why we show FULL badge and disable join button
+   */
   return (
     <div className="lg:col-span-2 card bg-base-100 border-2 border-primary/20 hover:border-primary/30 h-full">
       <div className="card-body">

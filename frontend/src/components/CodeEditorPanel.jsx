@@ -15,8 +15,8 @@ function CodeEditorPanel({
       <div className="flex items-center justify-between px-4 py-3 bg-base-100 border-t border-base-300">
         <div className="flex items-center gap-3">
           <img
-            src={LANGUAGE_CONFIG[selectedLanguage].icon}
-            alt={LANGUAGE_CONFIG[selectedLanguage].name}
+            src={LANGUAGE_CONFIG[selectedLanguage]?.icon}
+            alt={LANGUAGE_CONFIG[selectedLanguage]?.name}
             className="size-6"
           />
           <select
@@ -27,7 +27,7 @@ function CodeEditorPanel({
             {/*convert object entries to array like this ['js',{name:'javascript',.....}] len:2 */}
             {Object.entries(LANGUAGE_CONFIG).map(([key, lang]) => (
               <option key={key} value={key}>
-                {lang.name}
+                {key.toUpperCase()} - {lang.name}
               </option>
             ))}
           </select>
