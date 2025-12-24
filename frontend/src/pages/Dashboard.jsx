@@ -30,10 +30,12 @@ function DashboardPage() {
       return;
     }
     createSessionMutation.mutate(
+      // Payload
       {
         problem: roomConfig.problem,
         difficulty: roomConfig.difficulty.toLowerCase(),
       },
+      // Options
       {
         onSuccess: (data) => {
           setOnCreateModal(false);

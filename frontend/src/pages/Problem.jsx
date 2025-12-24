@@ -1,15 +1,13 @@
-import Navbar from "../components/Navbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-
-import ProblemDescription from "../components/ProblemDescription";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
-import { useEffect, useState } from "react";
+import ProblemDescription from "../components/ProblemDescription";
 import { PROBLEMS } from "../data/problems";
-import { useNavigate, useParams } from "react-router";
 import { executeCode } from "../lib/piston";
-import toast from "react-hot-toast";
-import confetti from "canvas-confetti";
+import { normalizeOutput, triggerConfetti } from "../lib/utils";
 
 function Problem() {
   const { id } = useParams();
@@ -40,45 +38,12 @@ function Problem() {
     setCode(PROBLEMS[currentProblemId].starterCode[newLanguage]);
     setOutput(null);
   };
-  // normalize output for comparison
-  const normalizeOutput = (output) => {
-    // normalize output for comparison (trim whitespace, handle different spacing)
-    return output
-      .trim()
-      .split("\n")
-      .map((line) =>
-        line
-          .trim()
-          // remove spaces after [ and before ]
-          .replace(/\[\s+/g, "[")
-          .replace(/\s+\]/g, "]")
-          // normalize spaces around commas to single space after comma
-          .replace(/\s*,\s*/g, ",")
-      )
-      .filter((line) => line.length > 0)
-      .join("\n");
-  };
+
   // check if actual output matches expected output
   const checkIfTestsPassed = (actualOutput, expectedOutput) => {
     return actualOutput == expectedOutput;
   };
-  // trigger confetti animation
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 80,
-      spread: 250,
-      origin: { x: 0.2, y: 0.6 },
-    });
 
-    confetti({
-      particleCount: 80,
-      spread: 250,
-      origin: { x: 0.8, y: 0.6 },
-    });
-  };
-  useEffect(() => {
-    console.log(output);
-  }, [output]);
   const handleRunCode = async () => {
     try {
       setOutput(null);
