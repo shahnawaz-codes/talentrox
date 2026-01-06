@@ -24,8 +24,8 @@ const Session = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState(null);
   const { data: session, isLoading, refetch } = useGetSessionById(sessionId);
-  const sessionJoinMutation = useJoinSession();
-  const sessionEndMutation = useEndSession();
+  const sessionJoinMutation = useJoinSession(sessionId);
+  const sessionEndMutation = useEndSession(sessionId);
   // Get current problem details by matching the title
   const currentProblem = session?.problem
     ? Object.values(PROBLEMS).find((p) => p.title == session?.problem)
@@ -34,9 +34,8 @@ const Session = () => {
   const isParticipant = session?.participant?.clerkId == user?.id;
   // If user is neither host nor participant, join as participant
   useEffect(() => {
-    if (!isLoading && !isHost && !isParticipant) {
-      sessionJoinMutation.mutate(sessionId, { onSuccess: refetch });
-    }
+    if (isLoading || !sessionId || isHost || isParticipant) return;
+    sessionJoinMutation.mutate(sessionId, { onSuccess: refetch });
   }, [isLoading, isHost, isParticipant, sessionId]);
 
   // State to hold the code editor content

@@ -113,8 +113,14 @@ export const joinSessionById = async (req, res, next) => {
         .status(400)
         .json({ message: "you can't join your own session" });
     //check if session is full
-    if (session.participant)
+    if (session.participant) {
+      // allow if the user is already a participant
+      if (session.participant.toString() === _id.toString()) {
+        return res.status(200).json({ session });
+      }
+
       return res.status(409).json({ message: "session is full" });
+    }
     session.participant = _id;
     await session.save();
     // add user to stream
