@@ -80,7 +80,7 @@ const ProblemDescription = ({
           {currentProblem?.examples && currentProblem.examples.length > 0 ? (
             <div className="space-y-4">
               {currentProblem.examples.map((example, idx) => (
-                <div>
+                <div key={idx}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="badge badge-sm">{idx + 1}</span>
                     <p className="font-semibold text-base-content">
