@@ -12,9 +12,12 @@ import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
 import { useUser } from "@clerk/clerk-react";
 import ProblemDescription from "../components/Session/ProblemDescription";
-import { PhoneOffIcon } from "lucide-react";
+import { Loader2Icon, PhoneOffIcon } from "lucide-react";
 import { normalizeOutput, triggerConfetti } from "../lib/utils";
 import toast from "react-hot-toast";
+import useStreamClient from "../hooks/useStreamClient";
+import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
+import VideoCallUI from "../components/VideoCallUI";
 
 const Session = () => {
   const { sessionId } = useParams();
@@ -32,15 +35,18 @@ const Session = () => {
     : null;
   const isHost = session?.host?.clerkId == user?.id;
   const isParticipant = session?.participant?.clerkId == user?.id;
+
+  const { streamClient, call, chatClient, channel, isInitializingCall } =
+    useStreamClient(session, isLoading, isHost, isParticipant);
   // If user is neither host nor participant, join as participant
   useEffect(() => {
-    if (isLoading || !sessionId || isHost || isParticipant) return;
+    if (isLoading || !session || !sessionId || isHost || isParticipant) return;
     sessionJoinMutation.mutate(sessionId, { onSuccess: refetch });
-  }, [isLoading, isHost, isParticipant, sessionId]);
+  }, [isLoading, session, isHost, isParticipant, sessionId]);
 
   // State to hold the code editor content
   const [code, setCode] = useState(
-    currentProblem?.starterCode[selectedLanguage] || ""
+    currentProblem?.starterCode[selectedLanguage] || "",
   );
   // Update starter code when problem or language changes
   useEffect(() => {
@@ -156,17 +162,36 @@ const Session = () => {
           {/* RIGHT PANEL - VIDEO */}
           <Panel defaultSize={50} minSize={30}>
             <div className="h-full bg-base-200 p-4 overflow-auto">
-              <div className="h-full flex items-center justify-center">
-                <div className="card bg-base-100 shadow-xl max-w-md">
-                  <div className="card-body items-center text-center">
-                    <PhoneOffIcon className="w-12 h-12 text-error mb-4" />
-                    <h2 className="card-title text-2xl">Video Call Area</h2>
-                    <p className="text-base-content/70">
-                      Video UI will appear here
-                    </p>
+              {isInitializingCall || sessionJoinMutation.isPending ? (
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <Loader2Icon className="w-12 h-12 mx-auto animate-spin text-primary mb-4" />
+                    <p className="text-lg">Connecting to video call...</p>
                   </div>
                 </div>
-              </div>
+              ) : sessionJoinMutation.isError || (!streamClient || !call) ? (
+                <div className="h-full flex items-center justify-center">
+                  <div className="card bg-base-100 shadow-xl max-w-md">
+                    <div className="card-body items-center text-center">
+                      <div className="w-24 h-24 bg-error/10 rounded-full flex items-center justify-center mb-4">
+                        <PhoneOffIcon className="w-12 h-12 text-error" />
+                      </div>
+                      <h2 className="card-title text-2xl">Connection Failed</h2>
+                      <p className="text-base-content/70">
+                        Unable to connect to the video call
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-full">
+                  <StreamVideo client={streamClient}>
+                    <StreamCall call={call}>
+                      <VideoCallUI chatClient={chatClient} channel={channel} />
+                    </StreamCall>
+                  </StreamVideo>
+                </div>
+              )}
             </div>
           </Panel>
         </PanelGroup>

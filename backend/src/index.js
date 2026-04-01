@@ -11,12 +11,16 @@ import sessionRoutes from "./routes/sessionRoute.js";
 import errorHandler from "./midleware/errorHandler.js";
 
 const app = express();
-// Clerk middleware for authentication. it gives access to req.auth
+// Clerk middleware for authentication.it gives access to req.auth
 app.use(clerkMiddleware());
 // Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // CORS configuration to allow requests from the client URL
+if (!ENV.CLIENT_URL) {
+  console.error("FATAL: ENV.CLIENT_URL is not set. CORS will fail.");
+  throw new Error("ENV.CLIENT_URL is required but not set");
+}
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 // Inngest setup for handling functions and events
 app.use("/api/inngest", serve({ client: inngest, functions }));

@@ -6,13 +6,14 @@ import Problems from "./pages/Problems";
 import Problem from "./pages/Problem";
 import DashboardPage from "./pages/Dashboard";
 import Session from "./pages/Session";
+
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
       {
-        index: true, // index: true means it is the default route
+        index: true, // Default route
         element: <Home />,
       },
       {
