@@ -15,7 +15,8 @@ export const initializeStreamClient = async (user, token) => {
 
 export const disconnectStreamClient = async () => {
   if (client) {
-    await client.disconnectUser();
+    const oldClient = client;
     client = null;
+    await oldClient.disconnectUser();
   }
 };
