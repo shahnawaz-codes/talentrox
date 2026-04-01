@@ -1,22 +1,13 @@
 import { StreamVideoClient } from "@stream-io/video-react-sdk";
 
 const apiKey = import.meta.env.VITE_STREAM_API_KEY;
-let client = null;
-export const initializeStreamClient = async (user, token) => {
-  if (!client) {
-    client = new StreamVideoClient({
-      apiKey,
-      token,
-      user,
-    });
-  }
-  return client;
+
+export const initializeStreamClient = (user, token) => {
+  return new StreamVideoClient({ apiKey, token, user });
 };
 
-export const disconnectStreamClient = async () => {
+export const disconnectStreamClient = async (client) => {
   if (client) {
-    const oldClient = client;
-    client = null;
-    await oldClient.disconnectUser();
+    await client.disconnectUser();
   }
 };

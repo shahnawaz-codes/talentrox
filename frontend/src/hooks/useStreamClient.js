@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { StreamChat } from "stream-chat";
 import toast from "react-hot-toast";
-import { initializeStreamClient, disconnectStreamClient } from "../lib/stream";
+import { initializeStreamClient } from "../lib/stream";
 import { generateToken } from "../api/sessionApi";
 
 function useStreamClient(session, loadingSession, isHost, isParticipant) {
@@ -11,9 +11,16 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
   const [channel, setChannel] = useState(null);
   const [isInitializingCall, setIsInitializingCall] = useState(true);
 
+  // Track whether the current user is authorised to be in this call.
+  // We wait until the join mutation has finished, so isParticipant may
+  // start false and flip to true shortly after mount — hence the effect
+  // dependency on both flags.
+  const canJoin = isHost || isParticipant;
+
   useEffect(() => {
     let videoCall = null;
     let chatClientInstance = null;
+    let videoClientInstance = null;
     const isCancelledRef = { current: false };
 
     const initCall = async () => {
@@ -21,8 +28,10 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
         setIsInitializingCall(false);
         return;
       }
-      if (!isHost && !isParticipant) {
-        setIsInitializingCall(false);
+      // Not yet authorised — wait for the join mutation to complete.
+      // The effect will re-run once isParticipant flips to true.
+      if (!canJoin) {
+        setIsInitializingCall(true); // keep spinner visible
         return;
       }
       if (session.status === "completed") {
@@ -35,29 +44,21 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
         if (isCancelledRef.current) return;
 
         const { userId, userName, userImage } = user;
-        if (process.env.NODE_ENV === 'development') {
-          console.log("Stream Data:", { userId });
-        }
-        const client = await initializeStreamClient(
-          {
-            id: userId,
-            name: userName,
-            image: userImage,
-          },
-          token,
+
+        // Always create a fresh client — never reuse a cached one.
+        videoClientInstance = initializeStreamClient(
+          { id: userId, name: userName, image: userImage },
+          token
         );
         if (isCancelledRef.current) {
-          // Clean up if cancelled
-          await client.disconnectUser();
+          await videoClientInstance.disconnectUser();
           return;
         }
+        setStreamClient(videoClientInstance);
 
-        setStreamClient(client);
-
-        videoCall = client.call("default", session.callId);
+        videoCall = videoClientInstance.call("default", session.callId);
         await videoCall.join({ create: true });
         if (isCancelledRef.current) {
-          // Clean up if cancelled
           await videoCall.leave();
           return;
         }
@@ -65,17 +66,11 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
 
         const apiKey = import.meta.env.VITE_STREAM_API_KEY;
         chatClientInstance = StreamChat.getInstance(apiKey);
-
         await chatClientInstance.connectUser(
-          {
-            id: userId,
-            name: userName,
-            image: userImage,
-          },
-          token,
+          { id: userId, name: userName, image: userImage },
+          token
         );
         if (isCancelledRef.current) {
-          // Clean up if cancelled
           await chatClientInstance.disconnectUser();
           return;
         }
@@ -83,14 +78,12 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
 
         const chatChannel = chatClientInstance.channel(
           "messaging",
-          session.callId,
+          session.callId
         );
         await chatChannel.watch();
-        if (isCancelledRef.current) {
-          // Clean up if cancelled - channel already watched, will be cleaned up in main cleanup
-          return;
+        if (!isCancelledRef.current) {
+          setChannel(chatChannel);
         }
-        setChannel(chatChannel);
       } catch (error) {
         if (!isCancelledRef.current) {
           toast.error("Failed to join video call");
@@ -105,29 +98,23 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
 
     if (session && !loadingSession) initCall();
 
-    // cleanup - performance reasons
     return () => {
       isCancelledRef.current = true;
-      // iife
       (async () => {
         try {
           if (videoCall) await videoCall.leave();
           if (chatClientInstance) await chatClientInstance.disconnectUser();
-          await disconnectStreamClient();
+          // Disconnect the video client we created (no global singleton).
+          if (videoClientInstance) await videoClientInstance.disconnectUser();
         } catch (error) {
           console.error("Cleanup error:", error);
         }
       })();
     };
-  }, [session, loadingSession, isHost, isParticipant]);
+  // Re-run when canJoin changes — this is the key fix for the race condition.
+  }, [session, loadingSession, canJoin]);
 
-  return {
-    streamClient,
-    call,
-    chatClient,
-    channel,
-    isInitializingCall,
-  };
+  return { streamClient, call, chatClient, channel, isInitializingCall };
 }
 
 export default useStreamClient;
