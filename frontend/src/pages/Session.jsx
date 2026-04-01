@@ -171,14 +171,14 @@ const Session = () => {
           {/* RIGHT PANEL - VIDEO */}
           <Panel defaultSize={50} minSize={30}>
             <div className="h-full bg-base-200 p-4 overflow-auto">
-              {isInitializingCall ? (
+              {isInitializingCall || sessionJoinMutation.isPending ? (
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center">
                     <Loader2Icon className="w-12 h-12 mx-auto animate-spin text-primary mb-4" />
                     <p className="text-lg">Connecting to video call...</p>
                   </div>
                 </div>
-              ) : !streamClient || !call ? (
+              ) : sessionJoinMutation.isError || (!streamClient || !call) ? (
                 <div className="h-full flex items-center justify-center">
                   <div className="card bg-base-100 shadow-xl max-w-md">
                     <div className="card-body items-center text-center">

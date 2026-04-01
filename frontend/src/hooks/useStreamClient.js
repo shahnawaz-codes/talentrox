@@ -15,6 +15,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
     let isCancelled = false;
     let videoCall = null;
     let chatClientInstance = null;
+    const isCancelledRef = { current: false };
 
     const initCall = async () => {
       /**
@@ -47,6 +48,8 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
       setChannel(null);
       try {
         const { token, user } = await generateToken();
+        if (isCancelledRef.current) return;
+
         const { userId, userName, userImage } = user;
         const client = await initializeStreamClient(
           {
@@ -88,10 +91,14 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
         if (isCancelled) return;
         setChannel(chatChannel);
       } catch (error) {
-        toast.error("Failed to join video call");
-        console.error("Error init call", error);
+        if (!isCancelledRef.current) {
+          toast.error("Failed to join video call");
+          console.error("Error init call", error);
+        }
       } finally {
-        setIsInitializingCall(false);
+        if (!isCancelledRef.current) {
+          setIsInitializingCall(false);
+        }
       }
     };
 
