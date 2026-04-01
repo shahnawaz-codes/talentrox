@@ -17,7 +17,7 @@ app.use(clerkMiddleware());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // CORS configuration to allow requests from the client URL
-app.use(cors({ origin: ENV.CLIENT_URL || "*", credentials: true }));
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 // Inngest setup for handling functions and events
 app.use("/api/inngest", serve({ client: inngest, functions }));
 

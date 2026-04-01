@@ -40,7 +40,16 @@ const Session = () => {
     useStreamClient(session, isLoading, isHost, isParticipant);
   // If user is neither host nor participant, join as participant
   useEffect(() => {
-    if (isLoading || !session || !sessionId || isHost || isParticipant) return;
+    if (
+      isLoading ||
+      !session ||
+      !sessionId ||
+      isHost ||
+      isParticipant ||
+      session.status === "completed"
+    ) {
+      return;
+    }
     sessionJoinMutation.mutate(sessionId, { onSuccess: refetch });
   }, [isLoading, session, isHost, isParticipant, sessionId]);
 
