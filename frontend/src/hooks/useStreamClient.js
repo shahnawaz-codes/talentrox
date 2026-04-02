@@ -15,6 +15,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
   // We wait until the join mutation has finished, so isParticipant may
   // start false and flip to true shortly after mount — hence the effect
   // dependency on both flags.
+
   const canJoin = isHost || isParticipant;
 
   useEffect(() => {
@@ -41,6 +42,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
 
       try {
         const { token, user } = await generateToken();
+
         if (isCancelledRef.current) return;
 
         const { userId, userName, userImage } = user;
@@ -48,7 +50,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
         // Always create a fresh client — never reuse a cached one.
         videoClientInstance = initializeStreamClient(
           { id: userId, name: userName, image: userImage },
-          token
+          token,
         );
         if (isCancelledRef.current) {
           await videoClientInstance.disconnectUser();
@@ -68,7 +70,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
         chatClientInstance = StreamChat.getInstance(apiKey);
         await chatClientInstance.connectUser(
           { id: userId, name: userName, image: userImage },
-          token
+          token,
         );
         if (isCancelledRef.current) {
           await chatClientInstance.disconnectUser();
@@ -78,7 +80,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
 
         const chatChannel = chatClientInstance.channel(
           "messaging",
-          session.callId
+          session.callId,
         );
         await chatChannel.watch();
         if (!isCancelledRef.current) {
@@ -111,7 +113,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
         }
       })();
     };
-  // Re-run when canJoin changes — this is the key fix for the race condition.
+    // Re-run when canJoin changes — this is the key fix for the race condition.
   }, [session, loadingSession, canJoin]);
 
   return { streamClient, call, chatClient, channel, isInitializingCall };

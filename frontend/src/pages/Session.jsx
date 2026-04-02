@@ -36,6 +36,9 @@ const Session = () => {
   const isHost = session?.host?.clerkId == user?.id;
   const isParticipant = session?.participant?.clerkId == user?.id;
 
+ 
+
+
   const { streamClient, call, chatClient, channel, isInitializingCall } =
     useStreamClient(session, isLoading, isHost, isParticipant);
   // If user is neither host nor participant, join as participant
@@ -169,7 +172,7 @@ const Session = () => {
                     <p className="text-lg">Connecting to video call...</p>
                   </div>
                 </div>
-              ) : sessionJoinMutation.isError || (!streamClient || !call) ? (
+              ) : sessionJoinMutation.isError || !streamClient || !call ? (
                 <div className="h-full flex items-center justify-center">
                   <div className="card bg-base-100 shadow-xl max-w-md">
                     <div className="card-body items-center text-center">
