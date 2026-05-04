@@ -305,7 +305,18 @@ Each problem includes:
         ↓
 7. Host ends session → Stream call/chat deleted, session marked completed
 ```
+---
 
+## 📸 Screenshots
+
+### 🖥️ Dashboard
+![Dashboard](frontend/public/images/screenshots/dashboard.png)
+
+### 🎥 Video Call
+![Video Call](frontend/public/images/screenshots/video-call.png)
+
+### 💻 Session / Code Editor
+![Session](frontend/public/images/screenshots/session.png)
 ---
 
 ## 🤝 Contributing
@@ -325,5 +336,5 @@ This project is licensed under the ISC License.
 ---
 
 <div align="center">
-  Made with ❤️ by <a href="https://github.com/khan-shahnawaz-09">Shahnawaz Khan</a>
+  Made with ❤️ by <a href="https://github.com/shahnawaz-codes">Shahnawaz Khan</a>
 </div>
