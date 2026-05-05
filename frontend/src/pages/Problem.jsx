@@ -6,19 +6,20 @@ import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
 import ProblemDescription from "../components/ProblemDescription";
 import { PROBLEMS } from "../data/problems";
-import { executeCode } from "../lib/piston";
 import { normalizeOutput, triggerConfetti } from "../lib/utils";
+import { useExecuteCode } from "../hooks/useExecuteCode";
+import { LANGUAGE_VERSIONS_INDEX } from "../data/language";
 
 function Problem() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isRunning, setIsRunning] = useState(false);
+  const { mutate: execute, isPending: isRunning } = useExecuteCode();
   const [output, setOutput] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   // Validate problem ID and set default if invalid
   const currentProblemId = id && PROBLEMS[id] ? id : "two-sum";
   const [code, setCode] = useState(
-    PROBLEMS[currentProblemId].starterCode[selectedLanguage]
+    PROBLEMS[currentProblemId].starterCode[selectedLanguage],
   );
   // Get current problem details
   const currentProblem = PROBLEMS[currentProblemId];
@@ -43,18 +44,22 @@ function Problem() {
   const checkIfTestsPassed = (actualOutput, expectedOutput) => {
     return actualOutput == expectedOutput;
   };
-
-  const handleRunCode = async () => {
-    try {
-      setOutput(null);
-      setIsRunning(true);
-      const result = await executeCode(selectedLanguage, code);
-      setOutput(result);
-      if (result.success) {
+  const executeCode = () => {
+    setOutput(null);
+    const { language, versionIndex } =
+      LANGUAGE_VERSIONS_INDEX[selectedLanguage];
+    let payload = {
+      script: code,
+      language,
+      versionIndex,
+    };
+    execute(payload, {
+      onSuccess: (result) => {
+        setOutput(result);
         const expectOutput = currentProblem.expectedOutput[selectedLanguage];
         const testsPassed = checkIfTestsPassed(
           normalizeOutput(result.output),
-          normalizeOutput(expectOutput)
+          normalizeOutput(expectOutput),
         );
         if (testsPassed) {
           triggerConfetti();
@@ -62,16 +67,37 @@ function Problem() {
         } else {
           toast.error("Some test cases failed. Please try again.");
         }
-      } else {
-        toast.error("Error: " + result.error);
-      }
-    } catch (error) {
-      console.error("Error executing code:", error);
-      toast.error("An error occurred while executing the code.");
-    } finally {
-      setIsRunning(false);
-    }
+      },
+      onError: (error) => {
+        toast.error("Error: " + error);
+      },
+    });
   };
+
+  //   try {
+  //     setOutput(null);
+  //     const result = executeCode(selectedLanguage, code);
+  //     setOutput(result);
+  //     if (result.success) {
+  //       const expectOutput = currentProblem.expectedOutput[selectedLanguage];
+  //       const testsPassed = checkIfTestsPassed(
+  //         normalizeOutput(result.output),
+  //         normalizeOutput(expectOutput),
+  //       );
+  //       if (testsPassed) {
+  //         triggerConfetti();
+  //         toast.success("All test cases passed!");
+  //       } else {
+  //         toast.error("Some test cases failed. Please try again.");
+  //       }
+  //     } else {
+  //       toast.error("Error: " + result.error);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error executing code:", error);
+  //     toast.error("An error occurred while executing the code.");
+  //   }
+  // };
   return (
     <>
       <div className="h-screen bg-base-100 flex flex-col mt-24">
@@ -100,7 +126,7 @@ function Problem() {
                     isRunning={isRunning}
                     onLanguageChange={handleLanguageChange}
                     onCodeChange={setCode}
-                    onRunCode={handleRunCode}
+                    onRunCode={executeCode}
                   />
                 </Panel>
 

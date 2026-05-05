@@ -8,7 +8,9 @@ import { inngest, functions } from "./lib/inngest.js";
 import { clerkMiddleware } from "@clerk/express";
 import chatRoutes from "./routes/chatRoute.js";
 import sessionRoutes from "./routes/sessionRoute.js";
+
 import errorHandler from "./midleware/errorHandler.js";
+import compilerRoutes from "./routes/compilerRoute.js";
 
 const app = express();
 // Clerk middleware for authentication.it gives access to req.auth
@@ -32,6 +34,7 @@ app.get("/hello", (req, res) => {
 // API routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/session", sessionRoutes);
+app.use("/api/execute", compilerRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

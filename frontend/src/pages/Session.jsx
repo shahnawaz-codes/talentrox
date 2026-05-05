@@ -6,7 +6,6 @@ import {
   useJoinSession,
 } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
-import { executeCode } from "../lib/piston";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
@@ -18,13 +17,15 @@ import toast from "react-hot-toast";
 import useStreamClient from "../hooks/useStreamClient";
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
 import VideoCallUI from "../components/VideoCallUI";
+import { useExecuteCode } from "../hooks/useExecuteCode";
+import { LANGUAGE_VERSIONS_INDEX } from "../data/language";
 
 const Session = () => {
   const { sessionId } = useParams();
+  const { mutate: execute, isPending: isRunning } = useExecuteCode();
   const navigate = useNavigate();
   const { user } = useUser();
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState(null);
   const { data: session, isLoading, refetch } = useGetSessionById(sessionId);
   const sessionJoinMutation = useJoinSession(sessionId);
@@ -35,9 +36,6 @@ const Session = () => {
     : null;
   const isHost = session?.host?.clerkId == user?.id;
   const isParticipant = session?.participant?.clerkId == user?.id;
-
- 
-
 
   const { streamClient, call, chatClient, channel, isInitializingCall } =
     useStreamClient(session, isLoading, isHost, isParticipant);
@@ -68,13 +66,18 @@ const Session = () => {
     setCode(currentProblem.starterCode[newLanguage] || "");
   };
   const handleRunCode = async () => {
-    try {
-      if (!session || !currentProblem) return;
-      setOutput(null);
-      setIsRunning(true);
-      const result = await executeCode(selectedLanguage, code);
-      setOutput(result);
-      if (result.success) {
+    if (!session || !currentProblem) return;
+    setOutput(null);
+    const { language, versionIndex } =
+      LANGUAGE_VERSIONS_INDEX[selectedLanguage];
+    let payload = {
+      script: code,
+      language,
+      versionIndex,
+    };
+    execute(payload, {
+      onSuccess: (result) => {
+        setOutput(result);
         const expectedOutput = currentProblem.expectedOutput[selectedLanguage];
         const testsPassed =
           normalizeOutput(result.output) === normalizeOutput(expectedOutput);
@@ -84,15 +87,11 @@ const Session = () => {
         } else {
           toast.error("Some test cases failed. Please try again.");
         }
-      } else {
+      },
+      onError: () => {
         toast.error("Error while execution. ");
-      }
-    } catch (error) {
-      setOutput({ success: false, error: "Error executing code." });
-      console.error("Error executing code:", error);
-    } finally {
-      setIsRunning(false);
-    }
+      },
+    });
   };
   // Navigate to dashboard the "participant" when session is ended
   useEffect(() => {
