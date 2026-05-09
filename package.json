@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/khan-shahnawaz-09/Video-Calling-Interview-Platform.git"
+    "url": "git+https://github.com/shahnawaz-codes/Video-Calling-Interview-Platform.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/khan-shahnawaz-09/Video-Calling-Interview-Platform/issues"
+    "url": "https://github.com/shahnawaz-codes/Video-Calling-Interview-Platform/issues"
   },
-  "homepage": "https://github.com/khan-shahnawaz-09/Video-Calling-Interview-Platform#readme"
+  "homepage": "https://github.com/shahnawaz-codes/Video-Calling-Interview-Platform#readme"
 }

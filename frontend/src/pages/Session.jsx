@@ -11,7 +11,7 @@ import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
 import { useUser } from "@clerk/clerk-react";
 import ProblemDescription from "../components/Session/ProblemDescription";
-import { Loader2Icon, PhoneOffIcon } from "lucide-react";
+import { Loader, Loader2Icon, PhoneOffIcon } from "lucide-react";
 import { normalizeOutput, triggerConfetti } from "../lib/utils";
 import toast from "react-hot-toast";
 import useStreamClient from "../hooks/useStreamClient";
@@ -113,7 +113,11 @@ const Session = () => {
     }
   };
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen col-span-full flex items-center justify-center py-20">
+        <Loader className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    );
   }
   return (
     <div className="h-screen bg-base-100 flex flex-col mt-24">
