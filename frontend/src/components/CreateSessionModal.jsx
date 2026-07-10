@@ -74,6 +74,7 @@ function CreateSessionModal({
             className="btn btn-primary gap-2"
             onClick={onCreateRoom}
             disabled={isCreating || !roomConfig.problem}
+            data-track="session-create"
           >
             {isCreating ? (
               <LoaderIcon className="size-5 animate-spin" />
