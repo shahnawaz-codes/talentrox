@@ -14,7 +14,7 @@ if (!PUBLISHABLE_KEY) {
   throw new Error("Add your Clerk Publishable Key to the .env file");
 }
 const analytics = new Analytics({
-  projectKey: "evX_2ee0f9fd-901d-45b9-864c-6ae552977fa8",
+  projectKey: "evX_b871effa-1c0e-489d-8665-2fcd104b7ab5",
 });
 analytics.init();
 window.Analytics = analytics;
