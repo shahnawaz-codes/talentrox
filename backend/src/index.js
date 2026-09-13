@@ -12,6 +12,7 @@ import sessionRoutes from "./routes/sessionRoute.js";
 
 import errorHandler from "./midleware/errorHandler.js";
 import compilerRoutes from "./routes/compilerRoute.js";
+import analyzeRoutes from "./routes/analyzeRoute.js";
 
 const app = express();
 // Clerk middleware for authentication.it gives access to req.auth
@@ -36,6 +37,8 @@ app.get("/hello", (req, res) => {
 app.use("/api/chat", chatRoutes);
 app.use("/api/session", sessionRoutes);
 app.use("/api/execute", compilerRoutes);
+app.use("/api/analyze-code", analyzeRoutes);
+
 
 // Error handling middleware
 app.use(errorHandler);

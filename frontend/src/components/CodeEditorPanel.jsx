@@ -1,14 +1,16 @@
 import Editor from "@monaco-editor/react";
-import { Loader2Icon, PlayIcon } from "lucide-react";
+import { Loader2Icon, PlayIcon, Sparkles } from "lucide-react";
 import { LANGUAGE_CONFIG } from "../data/problems";
 
 function CodeEditorPanel({
   selectedLanguage,
   code,
   isRunning,
+  isAnalyzing,
   onLanguageChange,
   onCodeChange,
   onRunCode,
+  onAnalyzeCode,
 }) {
   return (
     <div className="h-full bg-base-300 flex flex-col">
@@ -33,24 +35,48 @@ function CodeEditorPanel({
           </select>
         </div>
 
-        <button
-          className="btn btn-primary btn-sm gap-2"
-          disabled={isRunning}
-          onClick={onRunCode}
-        >
-          {isRunning ? (
-            <>
-              <Loader2Icon className="size-4 animate-spin" />
-              Running...
-            </>
-          ) : (
-            <>
-              <PlayIcon className="size-4" />
-              Run Code
-            </>
+        <div className="flex items-center gap-2">
+          {onAnalyzeCode && (
+            <button
+              className="btn btn-sm gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 hover:border-primary transition-all shadow-[0_0_12px_rgba(30,184,84,0.15)] hover:shadow-[0_0_20px_rgba(30,184,84,0.3)] hover:scale-105"
+              disabled={isRunning || isAnalyzing}
+              onClick={onAnalyzeCode}
+              title="Analyze code with Gemini AI for Big-O complexity, bugs, and edge cases"
+            >
+              {isAnalyzing ? (
+                <>
+                  <Loader2Icon className="size-4 animate-spin text-primary" />
+                  <span>Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="size-4 text-primary" />
+                  <span>Analyze Code</span>
+                </>
+              )}
+            </button>
           )}
-        </button>
+
+          <button
+            className="btn btn-primary btn-sm gap-2"
+            disabled={isRunning || isAnalyzing}
+            onClick={onRunCode}
+          >
+            {isRunning ? (
+              <>
+                <Loader2Icon className="size-4 animate-spin" />
+                Running...
+              </>
+            ) : (
+              <>
+                <PlayIcon className="size-4" />
+                Run Code
+              </>
+            )}
+          </button>
+        </div>
       </div>
+
 
       <div className="flex-1">
         <Editor

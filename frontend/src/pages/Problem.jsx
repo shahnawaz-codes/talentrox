@@ -8,13 +8,16 @@ import ProblemDescription from "../components/ProblemDescription";
 import { PROBLEMS } from "../data/problems";
 import { normalizeOutput, triggerConfetti } from "../lib/utils";
 import { useExecuteCode } from "../hooks/useExecuteCode";
+import { useAnalyzeCode } from "../hooks/useAnalyzeCode";
 import { LANGUAGE_VERSIONS_INDEX } from "../data/language";
 
 function Problem() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { mutate: execute, isPending: isRunning } = useExecuteCode();
+  const { mutate: analyzeCode, isPending: isAnalyzing } = useAnalyzeCode();
   const [output, setOutput] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   // Validate problem ID and set default if invalid
   const currentProblemId = id && PROBLEMS[id] ? id : "two-sum";
@@ -27,7 +30,9 @@ function Problem() {
   useEffect(() => {
     setCode(PROBLEMS[currentProblemId].starterCode[selectedLanguage]);
     setOutput(null);
+    setAnalysis(null);
   }, [currentProblemId, selectedLanguage]);
+
 
   // navigate to a different problem
   const handleProblemChange = (newProblemId) => {
@@ -74,30 +79,29 @@ function Problem() {
     });
   };
 
-  //   try {
-  //     setOutput(null);
-  //     const result = executeCode(selectedLanguage, code);
-  //     setOutput(result);
-  //     if (result.success) {
-  //       const expectOutput = currentProblem.expectedOutput[selectedLanguage];
-  //       const testsPassed = checkIfTestsPassed(
-  //         normalizeOutput(result.output),
-  //         normalizeOutput(expectOutput),
-  //       );
-  //       if (testsPassed) {
-  //         triggerConfetti();
-  //         toast.success("All test cases passed!");
-  //       } else {
-  //         toast.error("Some test cases failed. Please try again.");
-  //       }
-  //     } else {
-  //       toast.error("Error: " + result.error);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error executing code:", error);
-  //     toast.error("An error occurred while executing the code.");
-  //   }
-  // };
+  const handleAnalyzeCode = () => {
+    if (!code || !code.trim()) {
+      toast.error("Please write some code before analyzing.");
+      return;
+    }
+    const notes = currentProblem?.description?.notes?.join("\n") || "";
+    const constraints = currentProblem?.constraints?.join("\n") || "";
+    const problemStatement = `${currentProblem?.title || "Problem"}\n\nDescription:\n${currentProblem?.description?.text || ""}\n${notes}\n\nConstraints:\n${constraints}`;
+
+    analyzeCode(
+      {
+        code,
+        language: selectedLanguage,
+        problemStatement,
+      },
+      {
+        onSuccess: (data) => {
+          setAnalysis(data);
+        },
+      }
+    );
+  };
+
   return (
     <>
       <div className="h-screen bg-base-100 flex flex-col mt-24">
@@ -124,9 +128,11 @@ function Problem() {
                     code={code}
                     selectedLanguage={selectedLanguage}
                     isRunning={isRunning}
+                    isAnalyzing={isAnalyzing}
                     onLanguageChange={handleLanguageChange}
                     onCodeChange={setCode}
                     onRunCode={executeCode}
+                    onAnalyzeCode={handleAnalyzeCode}
                   />
                 </Panel>
 
@@ -134,7 +140,11 @@ function Problem() {
 
                 {/* Output */}
                 <Panel defaultSize={30} minSize={30}>
-                  <OutputPanel output={output} />
+                  <OutputPanel
+                    output={output}
+                    analysis={analysis}
+                    isAnalyzing={isAnalyzing}
+                  />
                 </Panel>
               </PanelGroup>
             </Panel>
@@ -146,3 +156,4 @@ function Problem() {
 }
 
 export default Problem;
+

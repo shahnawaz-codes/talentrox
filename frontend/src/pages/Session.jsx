@@ -18,18 +18,22 @@ import useStreamClient from "../hooks/useStreamClient";
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
 import VideoCallUI from "../components/VideoCallUI";
 import { useExecuteCode } from "../hooks/useExecuteCode";
+import { useAnalyzeCode } from "../hooks/useAnalyzeCode";
 import { LANGUAGE_VERSIONS_INDEX } from "../data/language";
 
 const Session = () => {
   const { sessionId } = useParams();
   const { mutate: execute, isPending: isRunning } = useExecuteCode();
+  const { mutate: analyzeCode, isPending: isAnalyzing } = useAnalyzeCode();
   const navigate = useNavigate();
   const { user } = useUser();
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [output, setOutput] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
   const { data: session, isLoading, refetch } = useGetSessionById(sessionId);
   const sessionJoinMutation = useJoinSession(sessionId);
   const sessionEndMutation = useEndSession(sessionId);
+
   // Get current problem details by matching the title
   const currentProblem = session?.problem
     ? Object.values(PROBLEMS).find((p) => p.title == session?.problem)
@@ -93,6 +97,29 @@ const Session = () => {
       },
     });
   };
+  const handleAnalyzeCode = () => {
+    if (!code || !code.trim()) {
+      toast.error("Please write some code before analyzing.");
+      return;
+    }
+    const notes = currentProblem?.description?.notes?.join("\n") || "";
+    const constraints = currentProblem?.constraints?.join("\n") || "";
+    const problemStatement = `${session?.problem || currentProblem?.title || "Problem"}\n\nDescription:\n${currentProblem?.description?.text || ""}\n${notes}\n\nConstraints:\n${constraints}`;
+
+    analyzeCode(
+      {
+        code,
+        language: selectedLanguage,
+        problemStatement,
+      },
+      {
+        onSuccess: (data) => {
+          setAnalysis(data);
+        },
+      }
+    );
+  };
+
   // Navigate to dashboard the "participant" when session is ended
   useEffect(() => {
     if (!session || isLoading) return;
@@ -147,21 +174,28 @@ const Session = () => {
                       selectedLanguage={selectedLanguage}
                       code={code}
                       isRunning={isRunning}
+                      isAnalyzing={isAnalyzing}
                       onLanguageChange={handleLanguageChange}
                       onCodeChange={setCode}
                       onRunCode={handleRunCode}
+                      onAnalyzeCode={handleAnalyzeCode}
                     />
                   </Panel>
 
                   <PanelResizeHandle className="h-2 bg-base-300 hover:bg-primary transition-colors cursor-row-resize" />
 
                   <Panel defaultSize={30} minSize={15}>
-                    <OutputPanel output={output} />
+                    <OutputPanel
+                      output={output}
+                      analysis={analysis}
+                      isAnalyzing={isAnalyzing}
+                    />
                   </Panel>
                 </PanelGroup>
               </Panel>
             </PanelGroup>
           </Panel>
+
 
           <PanelResizeHandle className="w-2 bg-base-300 hover:bg-primary transition-colors cursor-col-resize" />
 
