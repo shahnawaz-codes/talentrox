@@ -13,11 +13,11 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
   throw new Error("Add your Clerk Publishable Key to the .env file");
 }
-const analytics = new Analytics({
+export const analytics = new Analytics({
   projectKey: "evX_b871effa-1c0e-489d-8665-2fcd104b7ab5",
 });
 analytics.init();
-window.Analytics = analytics;
+window.analytics = analytics;
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <StrictMode>

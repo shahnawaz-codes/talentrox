@@ -24,6 +24,7 @@ import {
   SignedOut,
 } from "@clerk/clerk-react";
 import Navbar from "../components/Navbar";
+import { analytics } from "../main";
 
 // Counter animation hook
 function useCountAnimation(end, duration = 2000, startCounting) {
@@ -64,7 +65,7 @@ function useInView(options = {}) {
           setIsInView(true);
         }
       },
-      { threshold: 0.1, ...options }
+      { threshold: 0.1, ...options },
     );
 
     if (ref.current) {
@@ -249,7 +250,7 @@ function Home() {
       </ClerkLoaded>
 
       {/* ENHANCED HERO SECTION */}
-      <div className="max-w-7xl mx-auto px-6 py-24 lg:py-32 mt-20" >
+      <div className="max-w-7xl mx-auto px-6 py-24 lg:py-32 mt-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* LEFT CONTENT */}
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -280,13 +281,21 @@ function Home() {
             {/* CTA BUTTONS */}
             <div className="flex flex-col sm:flex-row gap-4 animate-in fade-in duration-700 delay-300">
               <SignInButton mode="modal">
-                <button className="btn btn-primary btn-lg gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                <button
+                  className="btn btn-primary btn-lg gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  data-track="start-free-trial"
+                >
                   <Zap className="size-5" />
                   Start Free Trial
                 </button>
               </SignInButton>
 
-              <button className="btn btn-outline btn-lg gap-2 hover:scale-105 transition-all">
+              <button
+                className="btn btn-outline btn-lg gap-2 hover:scale-105 transition-all"
+                onClick={() =>
+                  analytics.track("manual-custom-event", { score: 100 })
+                }
+              >
                 <PlayCircle className="size-5" />
                 Watch Demo
               </button>
