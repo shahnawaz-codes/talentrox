@@ -5,7 +5,8 @@ export const protectedRoute = [
   requireAuth(), // Clerk middleware to verify authentication
   async (req, res, next) => {
     try {
-      const { userId } = req.auth();
+      const authObj = typeof req.auth === "function" ? req.auth() : (req.auth || {});
+      const userId = authObj.userId;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -22,3 +23,4 @@ export const protectedRoute = [
     }
   },
 ];
+

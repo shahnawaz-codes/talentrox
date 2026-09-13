@@ -66,9 +66,11 @@ function RecentSessions({ sessions, isLoading }) {
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4" />
                       <span>
-                        {formatDistanceToNow(new Date(session.createdAt), {
-                          addSuffix: true,
-                        })}
+                        {session?.createdAt
+                          ? formatDistanceToNow(new Date(session.createdAt), {
+                              addSuffix: true,
+                            })
+                          : "Recently"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">

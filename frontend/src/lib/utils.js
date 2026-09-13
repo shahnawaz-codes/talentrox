@@ -15,6 +15,7 @@ export const getDifficultyBadgeClass = (difficulty) => {
 
 // normalize output for comparison
 export const normalizeOutput = (output) => {
+  if (!output || typeof output !== "string") return "";
   // normalize output for comparison (trim whitespace, handle different spacing)
   return output
     .trim()
@@ -31,6 +32,7 @@ export const normalizeOutput = (output) => {
     .filter((line) => line.length > 0)
     .join("\n");
 };
+
 
 // trigger confetti animation
 export const triggerConfetti = () => {

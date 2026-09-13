@@ -7,41 +7,46 @@ import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 export const inngest = new Inngest({ id: "Talentrox" });
 
 const syncUser = inngest.createFunction(
-  // Function ID
   { id: "sync/user" },
-  // Trigger on Clerk user creation event
-  { event: "clerk/user.created" },
+  [{ event: "clerk/user.created" }, { event: "clerk/user.updated" }],
   async ({ event }) => {
-    // Ensure DB connection
     await connectDB();
-    // Extract user data from event payload and create new user in DB
-    const { id, first_name, last_name, email_addresses, image_url } =
-      event.data;
-    const newUser = {
+    const { id, first_name, last_name, email_addresses, image_url } = event.data || {};
+    if (!id) return;
+
+    const userData = {
       clerkId: id,
-      name: `${first_name || ""} ${last_name || ""}`.trim(),
-      email: email_addresses[0]?.email_address || "",
+      name: `${first_name || ""} ${last_name || ""}`.trim() || "Anonymous User",
+      email: email_addresses?.[0]?.email_address || "",
       imageUrl: image_url || "",
     };
-    await User.create(newUser);
-    // Also upsert user in Stream
+
+    await User.findOneAndUpdate(
+      { clerkId: id },
+      userData,
+      { upsert: true, new: true }
+    );
+
     await upsertStreamUser({
-      id: newUser.clerkId, // Clerk ID
-      name: newUser.name,
-      image: newUser.imageUrl,
+      id: userData.clerkId,
+      name: userData.name,
+      image: userData.imageUrl,
     });
   }
 );
+
 const deleteUser = inngest.createFunction(
   { id: "delete/user" },
   { event: "clerk/user.deleted" },
   async ({ event }) => {
-    // Ensure DB connection
     await connectDB();
-    const { id } = event.data;
+    const { id } = event.data || {};
+    if (!id) return;
 
     await User.deleteOne({ clerkId: id });
     await deleteStreamUser(id.toString());
   }
 );
+
 export const functions = [syncUser, deleteUser];
+

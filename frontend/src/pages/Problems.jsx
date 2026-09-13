@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 import { PROBLEMS } from "../data/problems";
@@ -202,7 +202,7 @@ function Problems() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -217,4 +217,4 @@ function Problems() {
     </div>
   );
 }
-export default Problems;
+export default Problems;

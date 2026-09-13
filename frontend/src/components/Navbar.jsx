@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 import { BookOpen, LayoutDashboard, Sparkles, Menu, X } from "lucide-react";
 import { UserButton } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";

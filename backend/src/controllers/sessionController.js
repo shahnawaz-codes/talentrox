@@ -71,6 +71,8 @@ export const getMyRecentSessions = async (req, res, next) => {
       status: "completed",
       $or: [{ host: _id }, { participant: _id }],
     })
+      .populate("host", "name imageUrl clerkId email")
+      .populate("participant", "name imageUrl clerkId email")
       .sort({ createdAt: -1 })
       .limit(20);
     res.status(200).json({ sessions });
@@ -124,8 +126,12 @@ export const joinSessionById = async (req, res, next) => {
     session.participant = _id;
     await session.save();
     // add user to stream
-    const channel = chatClient.channel("messaging", session.callId);
-    await channel.addMembers([clerkId]);
+    try {
+      const channel = chatClient.channel("messaging", session.callId);
+      await channel.addMembers([clerkId]);
+    } catch (streamErr) {
+      console.warn("Stream add member error (non-fatal):", streamErr.message);
+    }
     res.status(200).json({ session });
   } catch (error) {
     console.error("Error joining session by id:", error);
@@ -146,14 +152,24 @@ export const endSessionById = async (req, res, next) => {
         .status(403)
         .json({ message: "You are not the host of this session" });
 
-    // remove user and end chat from stream chat
-    const channel = await chatClient.channel("messaging", session.callId);
-    await channel.removeMembers([clerkId]);
-    await channel.delete();
-    // end call from stream
-    const call = await streamClient.video.call("default", session.callId);
-    await call.delete({ hard: true });
-    // end session
+    // remove user and end chat from stream chat safely
+    try {
+      const channel = chatClient.channel("messaging", session.callId);
+      await channel.removeMembers([clerkId]);
+      await channel.delete();
+    } catch (chatErr) {
+      console.warn("Stream Chat deletion error (non-fatal):", chatErr.message);
+    }
+
+    // end call from stream safely
+    try {
+      const call = streamClient.video.call("default", session.callId);
+      await call.delete({ hard: true });
+    } catch (callErr) {
+      console.warn("Stream Video Call deletion error (non-fatal):", callErr.message);
+    }
+
+    // end session in DB
     session.status = "completed";
     await session.save();
     res.status(200).json({ session });
@@ -162,3 +178,4 @@ export const endSessionById = async (req, res, next) => {
     next(error);
   }
 };
+

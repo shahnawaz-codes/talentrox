@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 import { ENV } from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
 import { serve } from "inngest/express";
@@ -41,15 +42,17 @@ app.use(errorHandler);
 
 // Serve frontend in production
 const _dirname = path.resolve();
-//make our app ready for development and production
 if (ENV.NODE_ENV === "production") {
-  // Serve static files from the React frontend app
-  app.use(express.static(path.join(_dirname, "../frontend/dist")));
-  // Anything(route) that doesn't match the above, send back index.html
-  app.get("/{*any}", (req, res) => {
-    res.sendFile(path.join(_dirname, "../frontend/dist/index.html"));
+  const distPath = path.join(_dirname, "frontend/dist");
+  const fallbackDistPath = path.join(_dirname, "../frontend/dist");
+  const finalDistPath = fs.existsSync(distPath) ? distPath : fallbackDistPath;
+
+  app.use(express.static(finalDistPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(finalDistPath, "index.html"));
   });
 }
+
 
 export const startServer = async () => {
   try {

@@ -21,7 +21,7 @@ const ProblemDescription = ({
               {currentProblem?.category || "Easy • Arrays"}
             </p>
             <p className="text-base-content/60 mt-2">
-              {` Host: ${session?.host.name} • ${
+              {` Host: ${session?.host?.name || "Unknown Host"} • ${
                 session?.participant ? 2 : 1
               }/2 participants`}
             </p>
@@ -114,17 +114,18 @@ const ProblemDescription = ({
             Constraints
           </h2>
           <ul className="space-y-2 text-base-content/90">
-            {currentProblem.constraints?.map((constraint, idx) => (
+            {currentProblem?.constraints?.map((constraint, idx) => (
               <li className="flex gap-2" key={idx}>
                 <span className="text-primary">•</span>
                 <code className="text-sm">{constraint}</code>
               </li>
-            )) || "loading"}
+            )) || <li className="text-sm opacity-60">No constraints listed</li>}
           </ul>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default ProblemDescription;

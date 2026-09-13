@@ -11,10 +11,11 @@ function CreateSessionModal({
 }) {
   const problems = Object.values(PROBLEMS);
   const handleSelect = (e) => {
-    const selectedProblem = problems.find((p) => p.title == e.target.value);
+    const val = e.target.value;
+    const selectedProblem = problems.find((p) => p.title === val);
     setRoomConfig({
-      problem: e.target.value,
-      difficulty: selectedProblem.difficulty,
+      problem: val,
+      difficulty: selectedProblem?.difficulty || "",
     });
   };
   if (!isOpen) return null;
@@ -32,19 +33,24 @@ function CreateSessionModal({
               <span className="label-text-alt text-error">*</span>
             </label>
 
-            <select className="select w-full" onChange={handleSelect}>
-              <option value="" disabled selected>
+            <select
+              className="select w-full"
+              value={roomConfig.problem || ""}
+              onChange={handleSelect}
+            >
+              <option value="" disabled>
                 Choose a coding problem...
               </option>
               {problems.map((problem) => {
                 return (
                   <option value={problem.title} key={problem.id}>
-                    {problem.title}({problem.difficulty})
+                    {problem.title} ({problem.difficulty})
                   </option>
                 );
               })}
             </select>
           </div>
+
 
           {/* ROOM SUMMARY */}
           {roomConfig.problem && (
