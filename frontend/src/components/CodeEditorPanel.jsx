@@ -41,7 +41,7 @@ function CodeEditorPanel({
               className="btn btn-sm gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 hover:border-primary transition-all shadow-[0_0_12px_rgba(30,184,84,0.15)] hover:shadow-[0_0_20px_rgba(30,184,84,0.3)] hover:scale-105"
               disabled={isRunning || isAnalyzing}
               onClick={onAnalyzeCode}
-              title="Analyze code with Gemini AI for Big-O complexity, bugs, and edge cases"
+              title="Analyze code with AI for Big-O complexity, bugs, and edge cases"
             >
               {isAnalyzing ? (
                 <>

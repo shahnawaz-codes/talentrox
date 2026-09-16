@@ -51,10 +51,11 @@ if (ENV.NODE_ENV === "production") {
   const finalDistPath = fs.existsSync(distPath) ? distPath : fallbackDistPath;
 
   app.use(express.static(finalDistPath));
-  app.get("*", (req, res) => {
+  app.get("/{*splat}", (req, res) => {
     res.sendFile(path.join(finalDistPath, "index.html"));
   });
 }
+
 
 
 export const startServer = async () => {

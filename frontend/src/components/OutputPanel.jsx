@@ -63,7 +63,7 @@ function OutputPanel({ output, analysis, isAnalyzing }) {
         {activeTab === "analysis" && isAnalyzing && (
           <span className="text-xs text-primary flex items-center gap-1.5 font-medium animate-pulse">
             <span className="size-1.5 rounded-full bg-primary animate-ping" />
-            Gemini Analyzing...
+             Analyzing...
           </span>
         )}
       </div>
@@ -99,7 +99,7 @@ function OutputPanel({ output, analysis, isAnalyzing }) {
                   <Sparkles className="size-8 text-primary animate-spin" />
                 </div>
                 <h4 className="font-bold text-base text-base-content mb-1">
-                  Gemini AI is analyzing your solution...
+                   AI is analyzing your solution...
                 </h4>
                 <p className="text-xs text-base-content/60 max-w-sm leading-relaxed">
                   Calculating Big-O time & space complexity, evaluating boundary edge

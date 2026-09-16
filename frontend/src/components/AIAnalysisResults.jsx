@@ -62,7 +62,7 @@ export function AIAnalysisResults({ analysis }) {
           </div>
           <div>
             <h3 className="font-bold text-base bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Gemini AI Code Review
+               AI Code Review
             </h3>
             <p className="text-xs text-base-content/60 font-medium">
               Automated complexity & correctness analysis
