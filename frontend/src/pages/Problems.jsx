@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 import { PROBLEMS } from "../data/problems";
-import { ChevronRightIcon, Code2Icon, TrendingUp, Award, Target } from "lucide-react";
+import { ChevronRightIcon, Code2Icon, TrendingUp, Award, Target, Sparkles } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
 import { useState } from "react";
 
 function Problems() {
+  const navigate = useNavigate();
   const problems = Object.values(PROBLEMS);
   const [filter, setFilter] = useState("All");
 
@@ -30,18 +31,28 @@ function Problems() {
       <div className="max-w-7xl mx-auto px-4 py-12 mt-20">
         {/* ENHANCED HEADER */}
         <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="size-14 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-lg">
-              <Code2Icon className="size-8 text-primary-content" strokeWidth={2.5} />
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="size-14 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-lg">
+                <Code2Icon className="size-8 text-primary-content" strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  Practice Problems
+                </h1>
+                <p className="text-base-content/70 mt-1">
+                  Sharpen your coding skills with these curated problems
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Practice Problems
-              </h1>
-              <p className="text-base-content/70 mt-1">
-                Sharpen your coding skills with these curated problems
-              </p>
-            </div>
+
+            <Link
+              to="/mock-interview"
+              className="btn btn-primary shadow-lg shadow-primary/20 gap-2 self-start md:self-auto hover:scale-105 transition-all font-bold"
+            >
+              <Sparkles className="size-4" />
+              <span>Launch AI Mock Interview</span>
+            </Link>
           </div>
 
           {/* STATS CARDS - TOP */}
@@ -158,9 +169,24 @@ function Problems() {
                   </div>
 
                   {/* RIGHT SIDE */}
-                  <div className="flex items-center gap-2 text-primary group-hover:gap-3 transition-all">
-                    <span className="font-medium hidden sm:inline">Solve</span>
-                    <ChevronRightIcon className="size-5 group-hover:translate-x-1 transition-transform" />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/mock-interview/${problem.id}`);
+                      }}
+                      className="btn btn-xs sm:btn-sm bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 gap-1.5 transition-all shadow-sm"
+                      title="Practice with AI Interviewer"
+                    >
+                      <Sparkles className="size-3.5 text-primary" />
+                      <span className="hidden sm:inline font-semibold">Mock Interview</span>
+                    </button>
+                    <div className="flex items-center gap-2 text-primary group-hover:gap-3 transition-all ml-1">
+                      <span className="font-medium hidden sm:inline">Solve</span>
+                      <ChevronRightIcon className="size-5 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </div>
               </div>

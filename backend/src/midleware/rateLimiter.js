@@ -19,3 +19,22 @@ export const analyzeRateLimiter = rateLimit({
   },
 });
 
+export const interviewRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 40, // Accommodates up to 5-6 full multi-turn interview sessions per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: {
+    keyGeneratorIpFallback: false,
+  },
+  keyGenerator: (req) => {
+    return req.user?.clerkId || req.user?._id?.toString() || ipKeyGenerator(req.ip);
+  },
+  handler: (req, res) => {
+    res.status(429).json({
+      error: "Interview rate limit exceeded. You can make up to 40 interview requests per hour. Please try again later.",
+    });
+  },
+});
+
+

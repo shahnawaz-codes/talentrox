@@ -89,6 +89,29 @@ function Navbar() {
           </Link>
 
           <Link
+            to={"/mock-interview"}
+            className={`px-5 py-2.5 rounded-full font-medium transition-all duration-200 relative group ${
+              location.pathname.startsWith("/mock-interview")
+                ? "bg-primary text-primary-content shadow-[0_0_15px_rgba(var(--p),0.4)]"
+                : "text-base-content/70 hover:text-base-content hover:bg-base-200/50"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles
+                className={`size-4 ${
+                  location.pathname.startsWith("/mock-interview")
+                    ? "text-primary-content"
+                    : "text-primary"
+                }`}
+              />
+              <span>AI Mock Interview</span>
+            </div>
+            {!location.pathname.startsWith("/mock-interview") && (
+              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-[calc(100%-2rem)]"></span>
+            )}
+          </Link>
+
+          <Link
             to={"/dashboard"}
             className={`px-5 py-2.5 rounded-full font-medium transition-all duration-200 relative group ${
               isActive("/dashboard")
@@ -138,6 +161,21 @@ function Navbar() {
                 <div className="flex items-center gap-3">
                   <BookOpen className="size-5" />
                   <span>Problems</span>
+                </div>
+              </li>
+            </Link>
+
+            <Link to="/mock-interview" onClick={() => setIsMobileMenuOpen(false)}>
+              <li
+                className={`cursor-pointer hover:translate-x-2 transition-all duration-300 py-3 border-b border-base-content/10 ${
+                  location.pathname.startsWith("/mock-interview")
+                    ? "text-primary font-semibold"
+                    : "text-base-content"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Sparkles className="size-5 text-primary" />
+                  <span>AI Mock Interview</span>
                 </div>
               </li>
             </Link>

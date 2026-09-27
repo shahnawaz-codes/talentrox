@@ -7,6 +7,8 @@ import Problem from "./pages/Problem";
 import DashboardPage from "./pages/Dashboard";
 import Session from "./pages/Session";
 
+import MockInterview from "./pages/MockInterview";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -29,6 +31,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Problem />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mock-interview/:problemId?",
+        element: (
+          <ProtectedRoute>
+            <MockInterview />
           </ProtectedRoute>
         ),
       },

@@ -1,5 +1,6 @@
 import { getDifficultyBadgeClass } from "../lib/utils";
-import { FileText, List, CheckCircle, AlertCircle } from "lucide-react";
+import { FileText, List, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function ProblemDescription({ problem, currentProblemId, onProblemChange, allProblems }) {
   return (
@@ -34,7 +35,18 @@ function ProblemDescription({ problem, currentProblemId, onProblemChange, allPro
               {problem.difficulty}
             </span>
           </div>
-          <p className="text-sm text-base-content/70 font-medium">{problem.category}</p>
+
+          <div className="flex items-center justify-between mt-2 pt-2 border-t border-base-300">
+            <p className="text-sm text-base-content/70 font-medium">{problem.category}</p>
+            <Link
+              to={`/mock-interview/${currentProblemId}`}
+              className="btn btn-xs btn-primary gap-1.5 shadow-[0_0_12px_rgba(30,184,84,0.25)] hover:scale-105 transition-all font-bold"
+              title="Practice this problem in AI Mock Interview Mode"
+            >
+              <Sparkles className="size-3.5" />
+              <span>AI Mock Interview</span>
+            </Link>
+          </div>
         </div>
       </div>
 
